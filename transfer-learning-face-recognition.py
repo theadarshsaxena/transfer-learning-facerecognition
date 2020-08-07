@@ -32,7 +32,7 @@ from keras.layers import Conv2D, MaxPooling2D, ZeroPadding2D
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model
 #now add the classes aka number of face's data that you have
-num_classes = 4
+num_classes = 1
 FC_Head = layeradd(MobileNet, num_classes)
 model = Model(inputs = MobileNet.input, outputs = FC_Head)
 print(model.summary())
@@ -106,16 +106,8 @@ import cv2
 import numpy as np
 from os import listdir
 from os.path import isfile, join
-monkey_breeds_dict = {"[0]": "adarsh ", 
-                      "[1]": "archit",
-		      "[2]": "sachin",
-		      "[3]": "atul"
-                      }
-monkey_breeds_dict_n = {"n0": "adarsh ", 
-                      "n1": "archit",
-		      "n2": "sachin",
-		      "n3": "atul"
-		       }
+monkey_breeds_dict = {"[0]": "adarsh "}
+monkey_breeds_dict_n = {"n0": "adarsh"}
 cap = cv2.VideoCapture(0)
 def draw_test(name, pred, im):
     monkey = monkey_breeds_dict[str(pred)]
