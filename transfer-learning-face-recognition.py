@@ -1,3 +1,20 @@
+import cv2 
+import numpy as np
+webcam = cv2.VideoCapture(1)
+count=0
+while count<30:
+        check, frame = webcam.read()
+        count=count+1
+        key = cv2.waitKey(1000) 
+        file_name_path = 'C://Users/91730/Untitled Folder/dataset/training' + str(count) + '.jpg'
+        cv2.imwrite(file_name_path, frame)
+        cv2.imshow('myphoto', frame)
+        if cv2.waitKey(1) == 13 or count == 100:
+            cv2.destroyAllWindows()
+            webcam.release()
+            break
+webcam.release()
+cv2.destroyAllWindows()
 
 from keras.applications import MobileNet
 # MobileNet was designed to work on 224 x 224 pixel input images sizes
@@ -38,8 +55,8 @@ model = Model(inputs = MobileNet.input, outputs = FC_Head)
 print(model.summary())
 
 from keras.preprocessing.image import ImageDataGenerator
-train_data_dir = 'C://Users/adarsh/Fold1/dataset/train/'
-validation_data_dir = 'C://Users/adarsh/Fold1/dataset/validation/'
+train_data_dir = 'C://Users/91730/Untitled Folder/dataset/training/'
+validation_data_dir = 'C://Users/91730/Untitled Folder/dataset/validation/'
 # Let's use some data augmentaiton 
 train_datagen = ImageDataGenerator(
       rescale=1./255,
