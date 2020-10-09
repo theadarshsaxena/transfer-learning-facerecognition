@@ -1,20 +1,29 @@
-import cv2 
+import cv2
 import numpy as np
-webcam = cv2.VideoCapture(1)
-count=0
-while count<30:
-        check, frame = webcam.read()
-        count=count+1
-        key = cv2.waitKey(1000) 
-        file_name_path = 'C://Users/91730/Untitled Folder/dataset/training' + str(count) + '.jpg'
-        cv2.imwrite(file_name_path, frame)
-        cv2.imshow('myphoto', frame)
-        if cv2.waitKey(1) == 13 or count == 100:
-            cv2.destroyAllWindows()
-            webcam.release()
-            break
-webcam.release()
-cv2.destroyAllWindows()
+
+cap = cv2.VideoCapture(0)
+count= 0
+
+while True:
+
+    status, frame = cap.read()
+    count += 1
+    face = cv2.resize(frame, (244, 244))
+
+    # Save file in specified directory with unique name
+    file_name_path = 'C://Users/91730/Untitled Folder/dataset/training' + str(count) + '.jpg'
+    cv2.imwrite(file_name_path, frame)
+
+    # Put count on images and display live count
+    cv2.putText(frame, str(count), (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (0,255,0), 2)
+    cv2.imshow('Face Cropper', frame)
+
+    if cv2.waitKey(1) == 13 or count == 100: #13 is the Enter Key
+        break
+        
+cap.release()
+cv2.destroyAllWindows()      
+print("Collecting Samples Complete")
 
 from keras.applications import MobileNet
 # MobileNet was designed to work on 224 x 224 pixel input images sizes
@@ -49,7 +58,7 @@ from keras.layers import Conv2D, MaxPooling2D, ZeroPadding2D
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model
 #now add the classes aka number of face's data that you have
-num_classes = 1
+num_classes = 2
 FC_Head = layeradd(MobileNet, num_classes)
 model = Model(inputs = MobileNet.input, outputs = FC_Head)
 print(model.summary())
@@ -69,7 +78,7 @@ train_datagen = ImageDataGenerator(
 validation_datagen = ImageDataGenerator(rescale=1./255)
  
 # set our batch size (typically on most mid tier systems we'll use 16-32)
-batch_size = 18
+batch_size = 32
  
 train_generator = train_datagen.flow_from_directory(
         train_data_dir,
@@ -81,7 +90,9 @@ validation_generator = validation_datagen.flow_from_directory(
         validation_data_dir,
         target_size=(img_rows, img_cols),
         batch_size=batch_size,
-        class_mode='categorical')
+        class_mode='categorical',
+        shuffle=False)
+
 from keras.optimizers import RMSprop
 from keras.callbacks import ModelCheckpoint, EarlyStopping
                      
@@ -105,7 +116,7 @@ model.compile(loss = 'categorical_crossentropy',
 nb_train_samples = 1097
 nb_validation_samples = 272
 # We only train 5 EPOCHS 
-epochs = 1
+epochs = 5
 batch_size = 32
 history = model.fit_generator(
     train_generator,
@@ -114,6 +125,7 @@ history = model.fit_generator(
     callbacks = callbacks,
     validation_data = validation_generator,
     validation_steps = nb_validation_samples // batch_size)
+model.save("monkey_breed_mobileNet.h5")
 
 from keras.models import load_model
 classifier = load_model('monkey_breed_mobileNet.h5')
